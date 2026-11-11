@@ -1,8 +1,9 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { getBlog } from "@/lib/blogs";
 import { likeBlog } from "./actions";
 
-export default async function BlogPage({ params }) {
+async function BlogDetails({ params }) {
   const { id } = await params;
   const blog = getBlog(id);
 
@@ -11,7 +12,7 @@ export default async function BlogPage({ params }) {
   };
 
   return (
-    <div>
+    <>
       <h1>{blog.title}</h1>
       <p>Author: {blog.author}</p>
       <p>
@@ -23,6 +24,16 @@ export default async function BlogPage({ params }) {
         <input type="hidden" name="id" value={blog.id} />
         <button type="submit">Like</button>
       </form>
+    </>
+  );
+};
+
+export default function BlogPage({ params }) {
+  return (
+    <div>
+      <Suspense fallback={<p>Loading...</p>}>
+        <BlogDetails params={params} />
+      </Suspense>
     </div>
   );
 };
