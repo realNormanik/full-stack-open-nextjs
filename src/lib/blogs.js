@@ -1,49 +1,42 @@
-const globalStore = globalThis;
+import { eq, sql } from "drizzle-orm";
+import { db } from "@/db";
+import { blogs } from "@/db/schema";
+import { addToReadingList } from "./readingList";
 
-globalStore.__blogs ??= [
-  {
-    id: "1",
-    title: "Go To Statement Considered Harmful",
-    author: "Edsger W. Dijkstra",
-    url: "https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf",
-    likes: 5,
-  },
-  {
-    id: "2",
-    title: "React patterns",
-    author: "Michael Chan",
-    url: "https://reactpatterns.com/",
-    likes: 7,
-  },
-  {
-    id: "3",
-    title: "Canonical string reduction",
-    author: "Edsger W. Dijkstra",
-    url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
-    likes: 12,
-  },
-];
+export async function getBlogs() {
+  return db.select().from(blogs);
+}
 
-export function getBlogs() {
-  return globalStore.__blogs;
-};
+export async function getBlog(id) {
+  if (!Number.isInteger(id)) {
+    return undefined;
+  }
 
-export function addBlog({ title, author, url }) {
-  const blog = { id: crypto.randomUUID(), title, author, url, likes: 0 };
-  globalStore.__blogs.push(blog);
-  return blog;
-};
-
-export function getBlog(id) {
-  return globalStore.__blogs.find((blog) => blog.id === id);
-};
-
-export function incrementLikes(id) {
-  const blog = getBlog(id);
-
-  if (blog) {
-    blog.likes += 1;
-  };
+  const [blog] = await db.select().from(blogs).where(eq(blogs.id, id));
 
   return blog;
-};
+}
+
+export async function addBlog({ title, author, url, userId }) {
+  const [blog] = await db.insert(blogs).values({ title, author, url, userId }).returning();
+
+  if (userId) {
+    await addToReadingList(userId, blog.id);
+  }
+
+  return blog;
+}
+
+export async function incrementLikes(id) {
+  if (!Number.isInteger(id)) {
+    return undefined;
+  }
+
+  const [blog] = await db
+    .update(blogs)
+    .set({ likes: sql`${blogs.likes} + 1` })
+    .where(eq(blogs.id, id))
+    .returning();
+
+  return blog;
+}

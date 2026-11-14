@@ -1,26 +1,146 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --background: oklch(0.97 0.01 85);
+  --panel: oklch(1 0 0);
+  --soft: oklch(0.94 0.015 85);
+  --foreground: oklch(0.22 0.02 270);
+  --muted: oklch(0.52 0.02 270);
+  --line: oklch(0.9 0.01 85);
+  --brand: oklch(0.6 0.19 285);
+  --brand-ink: oklch(0.45 0.19 285);
+  --brand-soft: oklch(0.93 0.04 285);
+  --on-brand: oklch(0.99 0 0);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: oklch(0.17 0.015 270);
+    --panel: oklch(0.22 0.02 270);
+    --soft: oklch(0.26 0.02 270);
+    --foreground: oklch(0.95 0.01 85);
+    --muted: oklch(0.7 0.02 270);
+    --line: oklch(0.32 0.02 270);
+    --brand: oklch(0.7 0.16 285);
+    --brand-ink: oklch(0.82 0.12 285);
+    --brand-soft: oklch(0.32 0.07 285);
+    --on-brand: oklch(0.15 0.02 270);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@theme inline {
+  --color-background: var(--background);
+  --color-panel: var(--panel);
+  --color-soft: var(--soft);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-brand: var(--brand);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-soft: var(--brand-soft);
+  --color-on-brand: var(--on-brand);
+
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-gabarito), ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply min-h-screen bg-background font-sans text-foreground antialiased;
+  }
+
+  h1,
+  h2 {
+    @apply font-display font-bold tracking-tight;
+  }
+
+  h1 {
+    @apply text-3xl;
+  }
+
+  h2 {
+    @apply text-xl;
+  }
+
+  input:not([type="hidden"]) {
+    @apply w-full rounded-2xl border border-line bg-panel px-4 py-2.5 text-sm font-normal outline-none focus:border-brand focus:ring-2 focus:ring-brand-soft;
+  }
+}
+
+@utility card {
+  @apply rounded-4xl border border-line bg-panel p-6 shadow-sm;
+}
+
+@utility card-soft {
+  @apply rounded-4xl bg-soft p-6;
+}
+
+@utility card-brand {
+  @apply rounded-4xl bg-brand p-6 text-on-brand;
+}
+
+@utility chip {
+  @apply inline-flex shrink-0 items-center rounded-full bg-brand-soft px-3 py-1 text-xs font-semibold text-brand-ink;
+}
+
+@utility create {
+  @apply inline-flex cursor-pointer items-center justify-center rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-on-brand transition hover:opacity-90 disabled:opacity-50;
+}
+
+@utility vote {
+  @apply inline-flex cursor-pointer items-center justify-center rounded-full bg-brand-soft px-4 py-2 text-sm font-semibold text-brand-ink transition hover:opacity-90;
+}
+
+.markdown h1 {
+  font-size: 2.5rem;
+  margin: 1.5rem 0 1rem;
+}
+
+.markdown h2 {
+  font-size: 1.875rem;
+  margin: 2rem 0 0.75rem;
+}
+
+.markdown h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.markdown p {
+  margin: 1rem 0;
+  line-height: 1.7;
+}
+
+.markdown a {
+  color: var(--brand-ink);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.markdown a:hover {
+  color: var(--brand);
+}
+
+.markdown ul {
+  margin: 1rem 0;
+  padding-left: 2rem;
+  line-height: 1.7;
+  list-style-type: disc;
+}
+
+.markdown ol {
+  margin: 1rem 0;
+  padding-left: 2rem;
+  line-height: 1.7;
+  list-style-type: decimal;
+}
+
+.markdown li {
+  margin: 0.5rem 0;
+}
+
+.markdown hr {
+  margin: 2rem 0;
+  border-color: var(--line);
 }
